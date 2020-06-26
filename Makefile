@@ -26,6 +26,11 @@ test:
 	@go test -race -cover -coverprofile  var/coverage.txt ./...
 	@go tool cover -func var/coverage.txt | awk '/^total/{print $$1 " " $$3}'
 
+postlint:
+	@git diff --exit-code --quiet || (echo "There should not be any changes after the lint runs" && git status && exit 122;)
+
+pipeline: release postlint
+
 docs:
 	@cd ; go get golang.org/x/tools/cmd/godoc
 	@echo "Docs here: http://localhost:3232/pkg/${MODULE}"
