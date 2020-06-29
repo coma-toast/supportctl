@@ -5,6 +5,7 @@ import (
 
 	"github.com/coma-toast/supportctl/cmd/hello"
 	"github.com/coma-toast/supportctl/pkg/core"
+	"github.com/coma-toast/supportctl/pkg/system"
 	"github.com/spf13/cobra"
 )
 
@@ -13,6 +14,8 @@ func main() {
 	cmdCtx := core.CmdCtx{
 		StdOut: os.Stdout,
 		StdIn:  os.Stdin,
+		// Setup the services
+		DiskService: system.Disk{},
 	}
 
 	// Setup the Root Command
