@@ -1,0 +1,61 @@
+<?php
+
+/**
+ * driveFinder
+ *
+ * This script shows the device Model and the following for each drive attached to the device: Letter, Type, Serial, Serial Path, Hours, SMART Status, and if it is an SSD.
+ *
+ * @author Aaron Ellington <aellington@datto.com>
+ *
+ */
+
+require_once("library/mainLib.php");
+require_once("library/flexiTable.php");
+require_once("library/speedsyncTable.php");
+require_once("library/consoleTable.php");
+
+/* Model / OS Drive */
+echo "\nModel: " . getModel() . "\n";
+
+/* Drive Table */
+$table = new Console_Table();
+$table->setHeaders(
+    array(
+        "Drive",
+        "Type",
+        "Serial",
+        "Serial Path",
+        "Hours",
+        "SMART",
+        "SSD"
+    ));
+
+/* Adds info into table for each drive */
+foreach(drives() as $drive) {
+	$driveData = getDriveData($drive);
+
+	if($driveData != false) {
+		if($driveData["serialNumber"] == "") {
+	        $driveData["serialNumber"] = "n/a";
+	    }
+	    if($driveData["attributes"]["Power_On_Hours"] == "") {
+	        $driveData["attributes"]["Power_On_Hours"] = "n/a";
+	    }
+	    if($driveData["smartStatus"] == "") {
+	        $driveData["smartStatus"] = "n/a";
+	    }
+
+	    $table->addRow(
+	        array(
+	            $drive,
+	            $driveData["type"],
+	            $driveData["serialNumber"],
+	            $driveData["serialPath"],
+	            $driveData["attributes"]["Power_On_Hours"],
+	            $driveData["smartStatus"],
+	            $driveData["isSSD"]
+	        ));
+	}
+}
+
+echo $table->getTable() . PHP_EOL;

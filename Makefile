@@ -9,8 +9,9 @@ MODULE := $(shell awk '/^module/ {print $$2}' go.mod)
 release: clean lint test build
 
 build:
-	go build -o $(CURDIR)/var/$(PROJECT_NAME)
+	GOOS=linux GOARCH=amd64 go build -o $(CURDIR)/var/$(PROJECT_NAME)
 	@ln -sf $(CURDIR)/var/$(PROJECT_NAME) $(GO_PATH)/bin/$(PROJECT_NAME)
+	rsync var/supportctl backup-admin@192.168.1.22:/tmp/
 
 lint:
 	@cd ; go get golang.org/x/lint/golint
