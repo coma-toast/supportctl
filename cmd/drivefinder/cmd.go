@@ -16,5 +16,13 @@ func (cmd Cmd) Run(cmdCtx core.CmdCtx) {
 	if err != nil {
 		fmt.Fprintln(cmdCtx.StdOut, err)
 	}
-	fmt.Fprintln(cmdCtx.StdOut, "Partitions: ", partitions)
+	for _, partition := range partitions {
+		fmt.Fprintln(cmdCtx.StdOut, "------")
+		fmt.Fprintln(cmdCtx.StdOut, partition.String())
+		fmt.Fprintln(cmdCtx.StdOut, partition.Mountpoint)
+		fmt.Fprintln(cmdCtx.StdOut, partition.Device)
+		fmt.Fprintln(cmdCtx.StdOut, partition.Fstype)
+		fmt.Fprintln(cmdCtx.StdOut, partition.Opts)
+	}
+	fmt.Fprintln(cmdCtx.StdOut, "Serial: ", cmdCtx.DiskService.GetDiskSerialNumber("/dev/sda"))
 }

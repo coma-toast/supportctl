@@ -15,6 +15,11 @@ func (d Disk) GetPartitions() ([]disk.PartitionStat, error) {
 	return disk.Partitions(true)
 }
 
+// GetDiskSerialNumber for a given disk
+func (d Disk) GetDiskSerialNumber(diskname string) string {
+	return disk.GetDiskSerialNumber(diskname)
+}
+
 // DiskMockable is a mockable DiskService
 type DiskMockable struct {
 	GetPartitionsPartitions []disk.PartitionStat
