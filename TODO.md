@@ -18,3 +18,5 @@ root@JDALE-Home:/datto/tech# ls -lash
 
 Add features:
 Port check - all DWA/SS ports; iscsi/mercury;
+COW file resize
+    * requires pulling agent config from the agent `snapctl agent:request <key> config`
