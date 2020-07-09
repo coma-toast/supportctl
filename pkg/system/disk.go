@@ -4,6 +4,7 @@ import (
 	"io/ioutil"
 	"strings"
 
+	"github.com/LDCS/qslinux/blkid"
 	"github.com/shirou/gopsutil/disk"
 )
 
@@ -12,14 +13,16 @@ type DiskService interface {
 	GetPartitions() ([]disk.PartitionStat, error)
 	GetDiskSerialNumber(string) string
 	GetDisks() []string
+	GetBlockDisks() map[string]*blkid.Blkiddata
 }
 
 // Disk is a production DiskService
-type Disk struct{}
+type Disk struct {
+}
 
-// GetPartitions for a given disk
+// GetPartitions gets all partitions
 func (d Disk) GetPartitions() ([]disk.PartitionStat, error) {
-	return disk.Partitions(true)
+	return disk.Partitions(false)
 }
 
 // GetPartitions for a given disk
@@ -50,6 +53,12 @@ func (d Disk) GetDisks() []string {
 	}
 
 	return files
+}
+
+// GetBlockDisks gets blkid disk info
+func (d Disk) GetBlockDisks() map[string]*blkid.Blkiddata {
+	data := blkid.Blkid(false)
+	return data
 }
 
 // DiskMockable is a mockable DiskService

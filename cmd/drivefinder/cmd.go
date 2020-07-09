@@ -13,32 +13,49 @@ type Cmd struct {
 
 // Run the "drivefinder" command
 func (cmd Cmd) Run(cmdCtx core.CmdCtx) {
-	disks := cmdCtx.DiskService.GetDisks()
-	for _, disk := range disks {
-		if strings.Contains(disk, "zd") {
-			continue
-		}
-		disk = "/dev/" + disk
-		// fmt.Fprintln(cmdCtx.StdOut, disk)
-		serial := cmdCtx.DiskService.GetDiskSerialNumber(disk)
-		fmt.Fprintln(cmdCtx.StdOut, "------")
-		fmt.Fprintln(cmdCtx.StdOut, "Disk: "+disk)
-		fmt.Fprintln(cmdCtx.StdOut, "Serial: "+serial)
-
-	}
-
+	tableData := []TableData{}
+	_ = tableData
 	partitions, err := cmdCtx.DiskService.GetPartitions()
 	if err != nil {
 		fmt.Fprintln(cmdCtx.StdOut, err)
 	}
-
-	for _, partition := range partitions {
+	disks := cmdCtx.DiskService.GetDisks()
+	blockDisks := cmdCtx.DiskService.GetBlockDisks()
+	for _, disk := range disks {
+		// Skip the ziti devices
+		if strings.Contains(disk, "zd") {
+			continue
+		}
 		fmt.Fprintln(cmdCtx.StdOut, "------")
-		fmt.Fprintln(cmdCtx.StdOut, partition.String())
-		fmt.Fprintln(cmdCtx.StdOut, partition.Mountpoint)
-		fmt.Fprintln(cmdCtx.StdOut, partition.Device)
-		fmt.Fprintln(cmdCtx.StdOut, partition.Fstype)
-		fmt.Fprintln(cmdCtx.StdOut, partition.Opts)
+		disk = "/dev/" + disk
+		diskType := ""
+		for _, blockDisk := range blockDisks {
+			if strings.Contains(blockDisk.Devname_, "zd") || blockDisk.Type_ == "" {
+				continue
+			}
+			if strings.Contains(blockDisk.Devname_, disk) {
+				diskType = blockDisk.Type_
+			}
+		}
+		for _, partition := range partitions {
+			_ = partition
+			// spew.Dump(partition)
+		}
+		tableItem := TableData{
+			Drive:  disk,
+			Type:   diskType,
+			Serial: cmdCtx.DiskService.GetDiskSerialNumber(disk),
+		}
+		fmt.Println(cmdCtx.StdOut, tableItem)
+
 	}
+
+	// 	fmt.Fprintln(cmdCtx.StdOut, "------")
+	// 	fmt.Fprintln(cmdCtx.StdOut, partition.String())
+	// 	fmt.Fprintln(cmdCtx.StdOut, partition.Mountpoint)
+	// 	fmt.Fprintln(cmdCtx.StdOut, partition.Device)
+	// 	fmt.Fprintln(cmdCtx.StdOut, partition.Fstype)
+	// 	fmt.Fprintln(cmdCtx.StdOut, partition.Opts)
 	// fmt.Fprintln(cmdCtx.StdOut, "Serial: "+serial)
+
 }
