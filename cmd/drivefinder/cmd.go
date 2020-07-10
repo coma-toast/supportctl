@@ -49,6 +49,7 @@ func (cmd Cmd) Run(cmdCtx core.CmdCtx) {
 		fmt.Println(cmdCtx.StdOut, tableItem)
 	}
 }
-func (cmd Cmd) PopulateDisks(table &TableData) {
 
-}
+// func (cmd Cmd) PopulateDisks(table &TableData) {
+
+// }

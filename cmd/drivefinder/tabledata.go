@@ -1,5 +1,6 @@
 package drivefinder
 
+//
 type TableData struct {
 	Drive      string
 	Type       string
