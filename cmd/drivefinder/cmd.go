@@ -47,15 +47,8 @@ func (cmd Cmd) Run(cmdCtx core.CmdCtx) {
 			Serial: cmdCtx.DiskService.GetDiskSerialNumber(disk),
 		}
 		fmt.Println(cmdCtx.StdOut, tableItem)
-
 	}
-
-	// 	fmt.Fprintln(cmdCtx.StdOut, "------")
-	// 	fmt.Fprintln(cmdCtx.StdOut, partition.String())
-	// 	fmt.Fprintln(cmdCtx.StdOut, partition.Mountpoint)
-	// 	fmt.Fprintln(cmdCtx.StdOut, partition.Device)
-	// 	fmt.Fprintln(cmdCtx.StdOut, partition.Fstype)
-	// 	fmt.Fprintln(cmdCtx.StdOut, partition.Opts)
-	// fmt.Fprintln(cmdCtx.StdOut, "Serial: "+serial)
+}
+func (cmd Cmd) PopulateDisks(table &TableData) {
 
 }
