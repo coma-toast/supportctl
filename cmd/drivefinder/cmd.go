@@ -20,6 +20,12 @@ type TableDataRows struct {
 	tableData []TableData
 }
 
+// TODO: for each linux command, write a parser to take the output and then parse what you need
+// Can then be TDD
+// Call disk fucntion to get SMART info
+// Pass info to parser
+// pass parsed info to table printer
+
 // PrintTable prints all TableDataRows
 func (t TableDataRows) PrintTable(cmdCtx core.CmdCtx) {
 	// Instantiate table writer
