@@ -29,6 +29,7 @@ func (t TableDataRows) PrintTable(cmdCtx core.CmdCtx) {
 	// Instantiate headers
 	headers := make(table.Row, 0)
 	// Get all key values of the TableData struct for the header column labels
+	// TODO: avoid reflect. make the headers manually. more code, but less "magic"
 	e := reflect.ValueOf(&t.tableData[0]).Elem()
 	for i := 0; i < e.NumField(); i++ {
 		headers = append(headers, e.Type().Field(i).Name)
