@@ -26,6 +26,8 @@ type TableDataRows struct {
 // Pass info to parser
 // pass parsed info to table printer
 
+// TODO: ECX-4210
+
 // PrintTable prints all TableDataRows
 func (t TableDataRows) PrintTable(cmdCtx core.CmdCtx) {
 	// Instantiate table writer
