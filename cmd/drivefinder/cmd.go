@@ -61,44 +61,48 @@ func (cmd Cmd) Run(cmdCtx core.CmdCtx) {
 	if err != nil {
 		fmt.Fprintln(cmdCtx.StdOut, "Error getting partitions", err)
 	}
+
 	disks := cmdCtx.DiskService.GetDisks()
 	blockDisks := cmdCtx.DiskService.GetBlockDisks()
 	serialDisks, err := ioutil.ReadDir("/dev/disk/by-id")
 	if err != nil {
 		fmt.Fprintln(cmdCtx.StdOut, "Error getting serial path", err)
 	}
+
 	for _, disk := range disks {
 		// Skip the ziti devices
 		if strings.Contains(disk, "zd") {
 			continue
 		}
 		disk = "/dev/" + disk
-		diskType := ""
+		var diskType string
 		for _, blockDisk := range blockDisks {
-			if strings.Contains(blockDisk.Devname_, "zd") || blockDisk.Type_ == "" {
+			if strings.Contains(blockDisk.Devname_, "zd") {
 				continue
 			}
-			// if diskType != "" {
 			if strings.Contains(blockDisk.Devname_, disk) {
 				diskType = blockDisk.Type_
-				// }
 			}
 		}
 		for _, partition := range partitions {
 			_ = partition
-			// spew.Dump(partition)
 		}
+
 		serial := cmdCtx.DiskService.GetDiskSerialNumber(disk)
+		smartData := cmdCtx.DiskService.GetSmartStatus(disk)
+
 		tableItem := TableData{
 			Drive:      disk,
 			Type:       diskType,
 			Serial:     serial,
 			SerialPath: "/dev/disk/by-id/" + cmd.GetSerialDiskPath(serial, serialDisks),
+			SMART:      smartData.Status.Passed,
+			Hours:      smartData.PowerOnHours.Hours,
 		}
 		tableDataRows.tableData = append(tableDataRows.tableData, tableItem)
-		// fmt.Println(cmdCtx.StdOut, tableItem)
 	}
 	tableDataRows.PrintTable(cmdCtx)
+
 }
 
 // GetSerialDiskPath loops through all the serial disks and looks for the correct serial path

@@ -1,7 +1,10 @@
 package system
 
 import (
+	"encoding/json"
 	"io/ioutil"
+	"log"
+	"os/exec"
 	"strings"
 
 	"github.com/LDCS/qslinux/blkid"
@@ -14,6 +17,7 @@ type DiskService interface {
 	GetDiskSerialNumber(string) string
 	GetDisks() []string
 	GetBlockDisks() map[string]*blkid.Blkiddata
+	GetSmartStatus(string) SmartData
 }
 
 // Disk is a production DiskService
@@ -59,6 +63,22 @@ func (d Disk) GetDisks() []string {
 func (d Disk) GetBlockDisks() map[string]*blkid.Blkiddata {
 	data := blkid.Blkid(false)
 	return data
+}
+
+// GetSmartStatus gets the SMART data for a disk
+func (d Disk) GetSmartStatus(diskname string) SmartData {
+	var returnData SmartData
+	jsonData, err := exec.Command("smartctl", "-a", diskname, "--json").Output()
+	if err != nil {
+		log.Println("Error getting SMART data ", err)
+	}
+
+	err = json.Unmarshal(jsonData, &returnData)
+	if err != nil {
+		log.Println("Error unmarshalling JSON ", err)
+	}
+
+	return returnData
 }
 
 // DiskMockable is a mockable DiskService
