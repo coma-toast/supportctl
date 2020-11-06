@@ -51,6 +51,7 @@ func (t TableDataRows) PrintTable(cmdCtx core.CmdCtx) {
 	// Set headers, data, then render it
 	outputTable.AppendHeader(headers)
 	outputTable.AppendRows(data)
+	outputTable.SetStyle(table.StyleColoredBright)
 	outputTable.Render()
 }
 
@@ -96,7 +97,7 @@ func (cmd Cmd) Run(cmdCtx core.CmdCtx) {
 		smartData := cmdCtx.DiskService.GetSmartStatus(disk)
 		diskTypes := strings.Join(diskType, ",")
 		ssd := false
-		if smartData.RotationRate == "0" {
+		if smartData.RotationRate == 0 {
 			ssd = true
 		}
 
