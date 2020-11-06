@@ -61,6 +61,7 @@ func (d Disk) GetDisks() []string {
 
 // GetBlockDisks gets blkid disk info
 func (d Disk) GetBlockDisks() map[string]*blkid.Blkiddata {
+	// TODO: blkid package has output for loop volumes which we don't care about
 	data := blkid.Blkid(false)
 	return data
 }

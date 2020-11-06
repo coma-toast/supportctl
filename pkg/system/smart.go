@@ -8,6 +8,7 @@ type SmartData struct {
 	SerialNumber string      `json:"serial_number"`
 	Status       SmartStatus `json:"smart_status"`
 	PowerOnHours PowerOnTime `json:"power_on_time"`
+	RotationRate string      `json:"rotation_rate"`
 }
 
 // Device is general device data

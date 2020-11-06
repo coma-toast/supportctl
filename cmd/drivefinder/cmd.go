@@ -34,10 +34,10 @@ func (t TableDataRows) PrintTable(cmdCtx core.CmdCtx) {
 	outputTable := table.NewWriter()
 	// Where will the table writer write to
 	outputTable.SetOutputMirror(cmdCtx.StdOut)
-	// Instantiate headers
+	// Instantiate table headers
 	headers := make(table.Row, 0)
-	// Get all key values of the TableData struct for the header column labels
 	// TODO: avoid reflect. make the headers manually. more code, but less "magic"
+	// Get all key values of the TableData struct for the header column labels
 	e := reflect.ValueOf(&t.tableData[0]).Elem()
 	for i := 0; i < e.NumField(); i++ {
 		headers = append(headers, e.Type().Field(i).Name)
@@ -75,13 +75,16 @@ func (cmd Cmd) Run(cmdCtx core.CmdCtx) {
 			continue
 		}
 		disk = "/dev/" + disk
-		var diskType string
+		var diskType []string
 		for _, blockDisk := range blockDisks {
+			// spew.Dump(blockDisk)
 			if strings.Contains(blockDisk.Devname_, "zd") {
 				continue
 			}
 			if strings.Contains(blockDisk.Devname_, disk) {
-				diskType = blockDisk.Type_
+				if blockDisk.Type_ != "" {
+					diskType = append(diskType, blockDisk.Type_)
+				}
 			}
 		}
 		for _, partition := range partitions {
@@ -89,13 +92,20 @@ func (cmd Cmd) Run(cmdCtx core.CmdCtx) {
 		}
 
 		serial := cmdCtx.DiskService.GetDiskSerialNumber(disk)
+		serialPath := fmt.Sprintf("/dev/disk/by-id/%s", cmd.GetSerialDiskPath(serial, serialDisks))
 		smartData := cmdCtx.DiskService.GetSmartStatus(disk)
+		diskTypes := strings.Join(diskType, ",")
+		ssd := false
+		if smartData.RotationRate == "0" {
+			ssd = true
+		}
 
 		tableItem := TableData{
 			Drive:      disk,
-			Type:       diskType,
+			Type:       diskTypes,
+			SSD:        ssd,
 			Serial:     serial,
-			SerialPath: "/dev/disk/by-id/" + cmd.GetSerialDiskPath(serial, serialDisks),
+			SerialPath: serialPath,
 			SMART:      smartData.Status.Passed,
 			Hours:      smartData.PowerOnHours.Hours,
 		}
