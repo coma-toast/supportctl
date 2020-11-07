@@ -115,9 +115,10 @@ func (cmd Cmd) Run(cmdCtx core.CmdCtx) {
 	}
 	tableDataRows.PrintTable(cmdCtx)
 
-	// zpool := zfs.Zpool{}
-	zpool, err := cmdCtx.ZfsService.GetZpool()
-	spew.Dump(zpool, err)
+	zpool, err := cmdCtx.ZfsService.GetZpool("homePool")
+	spew.Dump(zpool, err) // * dev code
+	volumes, err := cmdCtx.ZfsService.GetVolumes()
+	spew.Dump(volumes, err)
 	// datasets, err := zpool.Datasets()
 
 }
