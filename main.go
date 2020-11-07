@@ -17,6 +17,7 @@ func main() {
 		StdIn:  os.Stdin,
 		// Setup the services
 		DiskService: system.Disk{},
+		ZfsService:  system.Zfs{},
 	}
 
 	// Setup the Root Command

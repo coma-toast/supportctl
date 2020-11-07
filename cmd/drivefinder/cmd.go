@@ -8,6 +8,7 @@ import (
 	"strings"
 
 	"github.com/coma-toast/supportctl/pkg/core"
+	"github.com/davecgh/go-spew/spew"
 	"github.com/jedib0t/go-pretty/table"
 )
 
@@ -113,6 +114,11 @@ func (cmd Cmd) Run(cmdCtx core.CmdCtx) {
 		tableDataRows.tableData = append(tableDataRows.tableData, tableItem)
 	}
 	tableDataRows.PrintTable(cmdCtx)
+
+	// zpool := zfs.Zpool{}
+	zpool, err := cmdCtx.ZfsService.GetZpool()
+	spew.Dump(zpool, err)
+	// datasets, err := zpool.Datasets()
 
 }
 

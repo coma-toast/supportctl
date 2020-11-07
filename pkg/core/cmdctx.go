@@ -12,4 +12,5 @@ type CmdCtx struct {
 	StdIn  io.Reader
 	// Services
 	DiskService system.DiskService
+	ZfsService  system.ZfsService
 }
