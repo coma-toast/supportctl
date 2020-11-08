@@ -8,7 +8,8 @@ import (
 	"strings"
 
 	"github.com/coma-toast/supportctl/pkg/core"
-	"github.com/jedib0t/go-pretty/table"
+	"github.com/jedib0t/go-pretty/v6/table"
+	"github.com/jedib0t/go-pretty/v6/text"
 )
 
 // Cmd is the "drivefinder" command
@@ -52,6 +53,8 @@ func (t TableDataRows) PrintTable(cmdCtx core.CmdCtx) {
 	outputTable.AppendHeader(headers)
 	outputTable.AppendRows(data)
 	outputTable.SetStyle(table.StyleColoredBright)
+	outputTable.Style().Color.Header = text.Colors{text.BgBlue, text.FgBlack}
+	outputTable.Style().Options.DrawBorder = false
 	outputTable.Render()
 }
 
@@ -107,7 +110,7 @@ func (cmd Cmd) Run(cmdCtx core.CmdCtx) {
 			Type:        diskTypes,
 			SSD:         ssd,
 			Serial:      serial,
-			SerialPath:  serialPath,
+			Serial_Path: serialPath,
 			SMART:       smartData.Status.Passed,
 			Hours:       smartData.PowerOnHours.Hours,
 			ZPOOLErrors: zpoolErrors,

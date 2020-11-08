@@ -48,7 +48,7 @@ func (z Zfs) GetZpoolErrors(disk string) int {
 	// Get zpool status output
 	output, err := exec.Command("zpool", "status").Output()
 	if err != nil {
-		fmt.Printf("Unable to get ZPOOL status %s", err.Error())
+		fmt.Printf("Unable to get ZPOOL status %s\n", err.Error())
 	}
 
 	// run through each line of zpool status
@@ -69,8 +69,6 @@ func (z Zfs) GetZpoolErrors(disk string) int {
 				}
 				// add the errors
 				errorCount += thisCount
-				// _ = result   // * dev code
-				// errorCount++ // * dev code so they aren't all 0
 			}
 			return errorCount
 		}

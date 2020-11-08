@@ -11,6 +11,7 @@ require (
 	github.com/go-ole/go-ole v1.2.4 // indirect
 	github.com/go-openapi/strfmt v0.19.5 // indirect
 	github.com/jedib0t/go-pretty v4.3.0+incompatible
+	github.com/jedib0t/go-pretty/v6 v6.0.5
 	github.com/mattn/go-runewidth v0.0.9 // indirect
 	github.com/mistifyio/go-zfs v2.1.1+incompatible
 	github.com/shirou/gopsutil v2.20.6+incompatible

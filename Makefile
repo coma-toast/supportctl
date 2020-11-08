@@ -19,6 +19,7 @@ build: ## Build the project
 	env GOOS=linux GOARCH=amd64 go build -o $(CURDIR)/var/$(PROJECT_NAME)
 	@ln -sf $(CURDIR)/var/$(PROJECT_NAME) $(GO_PATH)/bin/$(PROJECT_NAME)
 	rsync var/supportctl backup-admin@192.168.1.40:/tmp/
+	rsync var/supportctl jjd:/home/jason/www-data/files
 
 lint: ## Lint the source code
 	@cd ; go get golang.org/x/lint/golint
