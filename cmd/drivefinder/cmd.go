@@ -110,7 +110,7 @@ func (cmd Cmd) Run(cmdCtx core.CmdCtx) {
 			Type:        diskTypes,
 			SSD:         ssd,
 			Serial:      serial,
-			Serial_Path: serialPath,
+			SerialPath:  serialPath,
 			SMART:       smartData.Status.Passed,
 			Hours:       smartData.PowerOnHours.Hours,
 			ZPOOLErrors: zpoolErrors,
