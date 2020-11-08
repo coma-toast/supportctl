@@ -8,7 +8,6 @@ import (
 	"strings"
 
 	"github.com/coma-toast/supportctl/pkg/core"
-	"github.com/davecgh/go-spew/spew"
 	"github.com/jedib0t/go-pretty/table"
 )
 
@@ -101,26 +100,21 @@ func (cmd Cmd) Run(cmdCtx core.CmdCtx) {
 		if smartData.RotationRate == 0 {
 			ssd = true
 		}
+		zpoolErrors := cmdCtx.ZfsService.GetZpoolErrors(serial)
 
 		tableItem := TableData{
-			Drive:      disk,
-			Type:       diskTypes,
-			SSD:        ssd,
-			Serial:     serial,
-			SerialPath: serialPath,
-			SMART:      smartData.Status.Passed,
-			Hours:      smartData.PowerOnHours.Hours,
+			Drive:       disk,
+			Type:        diskTypes,
+			SSD:         ssd,
+			Serial:      serial,
+			SerialPath:  serialPath,
+			SMART:       smartData.Status.Passed,
+			Hours:       smartData.PowerOnHours.Hours,
+			ZPOOLErrors: zpoolErrors,
 		}
 		tableDataRows.tableData = append(tableDataRows.tableData, tableItem)
 	}
 	tableDataRows.PrintTable(cmdCtx)
-
-	zpool, err := cmdCtx.ZfsService.GetZpool("homePool")
-	spew.Dump(zpool, err) // * dev code
-	volumes, err := cmdCtx.ZfsService.GetVolumes()
-	spew.Dump(volumes, err)
-	// datasets, err := zpool.Datasets()
-
 }
 
 // GetSerialDiskPath loops through all the serial disks and looks for the correct serial path

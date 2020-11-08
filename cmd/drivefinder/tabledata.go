@@ -9,5 +9,5 @@ type TableData struct {
 	SerialPath  string
 	Hours       int64
 	SMART       bool
-	ZPOOLErrors int32
+	ZPOOLErrors int
 }
