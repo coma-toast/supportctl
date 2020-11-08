@@ -3,6 +3,7 @@ package main
 import (
 	"os"
 
+	"github.com/coma-toast/supportctl/cmd/drivefinder"
 	"github.com/coma-toast/supportctl/cmd/hello"
 	"github.com/coma-toast/supportctl/pkg/core"
 	"github.com/coma-toast/supportctl/pkg/system"
@@ -16,6 +17,7 @@ func main() {
 		StdIn:  os.Stdin,
 		// Setup the services
 		DiskService: system.Disk{},
+		ZfsService:  system.Zfs{},
 	}
 
 	// Setup the Root Command
@@ -31,6 +33,16 @@ func main() {
 		Run: func(cmd *cobra.Command, args []string) {
 			helloCmd := hello.Cmd{}
 			helloCmd.Run(cmdCtx)
+		},
+	})
+
+	// Add and Setup the Drivefinder Command
+	rootCmd.AddCommand(&cobra.Command{
+		Use:   "driveFinder",
+		Short: "Find drives",
+		Run: func(cmd *cobra.Command, args []string) {
+			driveFinderCmd := drivefinder.Cmd{}
+			driveFinderCmd.Run(cmdCtx)
 		},
 	})
 
