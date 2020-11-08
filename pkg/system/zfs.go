@@ -9,7 +9,6 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/davecgh/go-spew/spew"
 	"github.com/mistifyio/go-zfs"
 )
 
@@ -34,11 +33,10 @@ func (z Zfs) GetZpool(name string) (*zfs.Zpool, error) {
 
 // GetVolumes gets the volumes of a ZPOOL
 func (z Zfs) GetVolumes() ([]*zfs.Dataset, error) {
-	volumes, err := zfs.Volumes("homePool/home")
-	for _, dataset := range volumes {
-		children, err := dataset.Children(1)
-		spew.Dump(children, err)
-	}
+	volumes, err := zfs.Volumes("")
+	// for _, dataset := range volumes {
+	// 	children, err := dataset.Children(1)
+	// }
 
 	return volumes, err
 }

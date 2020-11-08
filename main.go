@@ -5,6 +5,7 @@ import (
 
 	"github.com/coma-toast/supportctl/cmd/drivefinder"
 	"github.com/coma-toast/supportctl/cmd/hello"
+	"github.com/coma-toast/supportctl/cmd/ifdestroy"
 	"github.com/coma-toast/supportctl/pkg/core"
 	"github.com/coma-toast/supportctl/pkg/system"
 	"github.com/spf13/cobra"
@@ -43,6 +44,17 @@ func main() {
 		Run: func(cmd *cobra.Command, args []string) {
 			driveFinderCmd := drivefinder.Cmd{}
 			driveFinderCmd.Run(cmdCtx)
+		},
+	})
+
+	// Add and Setup the IfDestroy Command
+	rootCmd.AddCommand(&cobra.Command{
+		Use:   "ifDestroy",
+		Short: "Free space estimate if snapshot(s) are destroyed",
+		Long:  "Calculate space freed by deleting a snapshot or a range of snapshots",
+		Run: func(cmd *cobra.Command, args []string) {
+			ifDestroyCmd := ifdestroy.Cmd{}
+			ifDestroyCmd.Run(cmdCtx)
 		},
 	})
 

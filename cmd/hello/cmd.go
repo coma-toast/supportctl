@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/coma-toast/supportctl/pkg/core"
+	"github.com/davecgh/go-spew/spew"
 )
 
 // Cmd is the "hello" command
@@ -18,4 +19,9 @@ func (cmd Cmd) Run(cmdCtx core.CmdCtx) {
 		fmt.Fprintln(cmdCtx.StdOut, partition.Mountpoint)
 	}
 	fmt.Fprintln(cmdCtx.StdOut, "Hello, world!")
+
+	zfsDatasets, err := cmdCtx.ZfsService.GetVolumes()
+	spew.Dump(zfsDatasets)
+	spew.Dump(err)
+
 }
