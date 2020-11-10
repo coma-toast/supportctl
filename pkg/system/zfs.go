@@ -8,6 +8,7 @@ import (
 	"regexp"
 	"strings"
 
+	"github.com/davecgh/go-spew/spew"
 	"github.com/mistifyio/go-zfs"
 )
 
@@ -21,6 +22,7 @@ type ZfsService interface {
 	GetZpoolErrors(disk string) []string
 	GetSnapshots(dataset *zfs.Dataset) ([]*zfs.Dataset, error)
 	DryRunDestroy(dataset string, start string, end string) (string, error)
+	ParseEpoch(dataset *zfs.Dataset) string
 }
 
 // Zfs is the ZFS service
@@ -72,9 +74,19 @@ func (z Zfs) GetZpoolErrors(disk string) []string {
 // DryRunDestroy runs a dry run zfs destroy
 func (z Zfs) DryRunDestroy(dataset string, start string, end string) (string, error) {
 	deleteRange := fmt.Sprintf("%s@%s%%%s", dataset, start, end)
+	spew.Dump("deleteRange", deleteRange)
 	output, err := exec.Command("zfs", "destroy", "-nvp", deleteRange).Output()
 
 	return string(output), err
 }
 
-// func (z Zfs) GetDatasets()
+// ParseEpoch gets an epoch from a dataset
+func (z Zfs) ParseEpoch(dataset *zfs.Dataset) string {
+	results := regexp.MustCompile(`(@)(\d+)`)
+	epoch := results.FindAllString(dataset.Name, -1)
+	test := results.FindStringIndex(dataset.Name)
+	spew.Dump("test", test)
+	spew.Dump("epoch", epoch)
+
+	return epoch[0]
+}

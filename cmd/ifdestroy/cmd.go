@@ -64,9 +64,9 @@ func (cmd Cmd) Run(cmdCtx core.CmdCtx) {
 	}
 
 	// * Make a parser to get the epochs
-	startPoint := selectDataset(snapshots)
-	endPoint := selectDataset(snapshots)
-	dryRunResult, err := cmdCtx.ZfsService.DryRunDestroy(selectedDataset.Name, startPoint.Origin, endPoint.Origin)
+	startPoint := cmdCtx.ZfsService.ParseEpoch(selectDataset(snapshots))
+	endPoint := cmdCtx.ZfsService.ParseEpoch(selectDataset(snapshots))
+	dryRunResult, err := cmdCtx.ZfsService.DryRunDestroy(selectedDataset.Name, startPoint, endPoint)
 	if err != nil {
 		fmt.Println("Error running dry run ", err)
 	}
