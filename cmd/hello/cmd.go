@@ -20,7 +20,7 @@ func (cmd Cmd) Run(cmdCtx core.CmdCtx) {
 	}
 	fmt.Fprintln(cmdCtx.StdOut, "Hello, world!")
 
-	zfsDatasets, err := cmdCtx.ZfsService.GetVolumes()
+	zfsDatasets, err := cmdCtx.ZfsService.GetFilesystems()
 	spew.Dump(zfsDatasets)
 	spew.Dump(err)
 

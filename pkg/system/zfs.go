@@ -17,8 +17,10 @@ import (
 // ZfsService is a service to work with ZFS
 type ZfsService interface {
 	GetZpool(string) (*zfs.Zpool, error)
-	GetVolumes() ([]*zfs.Dataset, error)
+	GetFilesystems() ([]*zfs.Dataset, error)
 	GetZpoolErrors(disk string) []string
+	GetSnapshots(dataset *zfs.Dataset) ([]*zfs.Dataset, error)
+	DryRunDestroy(dataset string, start string, end string) (string, error)
 }
 
 // Zfs is the ZFS service
@@ -30,14 +32,17 @@ func (z Zfs) GetZpool(name string) (*zfs.Zpool, error) {
 	return zfs.GetZpool(name)
 }
 
-// GetVolumes gets the volumes of a ZPOOL
-func (z Zfs) GetVolumes() ([]*zfs.Dataset, error) {
-	volumes, err := zfs.Volumes("")
-	// for _, dataset := range volumes {
-	// 	children, err := dataset.Children(1)
-	// }
+// GetFilesystems gets the volumes of a ZPOOL
+func (z Zfs) GetFilesystems() ([]*zfs.Dataset, error) {
+	volumes, err := zfs.Filesystems("")
 
 	return volumes, err
+}
+
+// GetSnapshots gets snapshots for a specific dataset
+func (z Zfs) GetSnapshots(dataset *zfs.Dataset) ([]*zfs.Dataset, error) {
+	return zfs.Snapshots(dataset.Name)
+
 }
 
 // GetZpoolErrors gets ZPOOL errors for a specific disk
@@ -62,6 +67,14 @@ func (z Zfs) GetZpoolErrors(disk string) []string {
 	}
 
 	return nil
+}
+
+// DryRunDestroy runs a dry run zfs destroy
+func (z Zfs) DryRunDestroy(dataset string, start string, end string) (string, error) {
+	deleteRange := fmt.Sprintf("%s@%s%%%s", dataset, start, end)
+	output, err := exec.Command("zfs", "destroy", "-nvp", deleteRange).Output()
+
+	return string(output), err
 }
 
 // func (z Zfs) GetDatasets()

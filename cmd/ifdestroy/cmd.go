@@ -3,11 +3,14 @@ package ifdestroy
 import (
 	"fmt"
 	"reflect"
+	"strings"
 
 	"github.com/coma-toast/supportctl/pkg/core"
+	"github.com/davecgh/go-spew/spew"
 	"github.com/jedib0t/go-pretty/v6/table"
 	"github.com/jedib0t/go-pretty/v6/text"
 	"github.com/manifoldco/promptui"
+	"github.com/mistifyio/go-zfs"
 )
 
 // Cmd is the "ifdestroy" command
@@ -49,24 +52,60 @@ func (t TableDataRows) PrintTable(cmdCtx core.CmdCtx) {
 
 // Run the "ifdestroy" command
 func (cmd Cmd) Run(cmdCtx core.CmdCtx) {
-	zfsDatasets, err := cmdCtx.ZfsService.GetVolumes()
+	zfsDatasets, err := cmdCtx.ZfsService.GetFilesystems()
 	if err != nil {
 		fmt.Println("Error getting datasets", err)
 	}
 
-	prompt := promptui.Select{
-		Label: "Select Dataset",
-		Items: zfsDatasets,
+	selectedDataset := selectDataset(zfsDatasets)
+	snapshots, err := cmdCtx.ZfsService.GetSnapshots(selectedDataset)
+	if err != nil {
+		fmt.Println("Error getting snapshots ", err)
 	}
 
-	_, result, err := prompt.Run()
+	// * Make a parser to get the epochs
+	startPoint := selectDataset(snapshots)
+	endPoint := selectDataset(snapshots)
+	dryRunResult, err := cmdCtx.ZfsService.DryRunDestroy(selectedDataset.Name, startPoint.Origin, endPoint.Origin)
+	if err != nil {
+		fmt.Println("Error running dry run ", err)
+	}
+	spew.Dump(dryRunResult)
+
+}
+
+func selectDataset(datasets []*zfs.Dataset) *zfs.Dataset {
+	templates := &promptui.SelectTemplates{
+		Label:    "{{ . }}?",
+		Active:   "-> {{ .Name | cyan }} ({{ .Used | red }})",
+		Inactive: "  {{ .Name | cyan }} ({{ .Used | red }})",
+		Selected: "-> {{ .Name | red | cyan }}",
+	}
+
+	searcher := func(input string, index int) bool {
+		dataset := datasets[index]
+		name := strings.Replace(strings.ToLower(dataset.Name), " ", "", -1)
+		input = strings.Replace(strings.ToLower(input), " ", "", -1)
+
+		return strings.Contains(name, input)
+	}
+
+	prompt := promptui.Select{
+		Label:     "Select Dataset",
+		Items:     datasets,
+		Templates: templates,
+		Size:      10,
+		Searcher:  searcher,
+	}
+
+	i, _, err := prompt.Run()
 
 	if err != nil {
 		fmt.Printf("Prompt failed %v\n", err)
-		return
+		return nil
 	}
 
-	fmt.Printf("You choose %q\n", result)
+	return datasets[i]
 }
 
 // func (cmd Cmd) PopulateDisks(table &TableData) {
