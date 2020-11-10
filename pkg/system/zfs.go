@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"os/exec"
 	"regexp"
-	"strconv"
 	"strings"
 
 	"github.com/mistifyio/go-zfs"
@@ -19,7 +18,7 @@ import (
 type ZfsService interface {
 	GetZpool(string) (*zfs.Zpool, error)
 	GetVolumes() ([]*zfs.Dataset, error)
-	GetZpoolErrors(disk string) int
+	GetZpoolErrors(disk string) []string
 }
 
 // Zfs is the ZFS service
@@ -42,7 +41,7 @@ func (z Zfs) GetVolumes() ([]*zfs.Dataset, error) {
 }
 
 // GetZpoolErrors gets ZPOOL errors for a specific disk
-func (z Zfs) GetZpoolErrors(disk string) int {
+func (z Zfs) GetZpoolErrors(disk string) []string {
 	// Get zpool status output
 	output, err := exec.Command("zpool", "status").Output()
 	if err != nil {
@@ -55,24 +54,14 @@ func (z Zfs) GetZpoolErrors(disk string) int {
 		// If the line contains the disk serial, sum the errors
 		if strings.Contains(scanner.Text(), disk) {
 			line := scanner.Text()
-			errorCount := 0
 			// regex to get just the 3 error columns
-			results := regexp.MustCompile(`(\b\d+\s*)(\b\d+\s*)(\b\d+)`).FindString(line)
+			results := regexp.MustCompile(`(\b\d+\.?\d?K?\s*)(\b\d+\.?\d?K?\s*)(\b\d+\.?\d?K?$)`).FindString(line)
 			// separate the error columns into a []string
-			errors := strings.Fields(results)
-			for _, thisError := range errors {
-				thisCount, err := strconv.Atoi(thisError)
-				if err != nil {
-					fmt.Println("Error converting zpool errors to int")
-				}
-				// add the errors
-				errorCount += thisCount
-			}
-			return errorCount
+			return strings.Fields(results)
 		}
 	}
 
-	return 0
+	return nil
 }
 
 // func (z Zfs) GetDatasets()

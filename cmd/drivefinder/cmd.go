@@ -103,7 +103,7 @@ func (cmd Cmd) Run(cmdCtx core.CmdCtx) {
 		if smartData.RotationRate == 0 {
 			ssd = true
 		}
-		zpoolErrors := cmdCtx.ZfsService.GetZpoolErrors(serial)
+		zpoolErrors := strings.Join(cmdCtx.ZfsService.GetZpoolErrors(serial), ",")
 
 		tableItem := TableData{
 			Drive:       disk,
