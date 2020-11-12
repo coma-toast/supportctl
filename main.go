@@ -41,6 +41,7 @@ func main() {
 	rootCmd.AddCommand(&cobra.Command{
 		Use:   "driveFinder",
 		Short: "Find drives",
+		Long:  "Find drives and related info",
 		Run: func(cmd *cobra.Command, args []string) {
 			driveFinderCmd := drivefinder.Cmd{}
 			driveFinderCmd.Run(cmdCtx)

@@ -2,52 +2,17 @@ package ifdestroy
 
 import (
 	"fmt"
-	"reflect"
+	"strconv"
 	"strings"
 
 	"github.com/coma-toast/supportctl/pkg/core"
-	"github.com/davecgh/go-spew/spew"
-	"github.com/jedib0t/go-pretty/v6/table"
-	"github.com/jedib0t/go-pretty/v6/text"
+	"github.com/coma-toast/supportctl/pkg/system"
 	"github.com/manifoldco/promptui"
 	"github.com/mistifyio/go-zfs"
 )
 
 // Cmd is the "ifdestroy" command
 type Cmd struct {
-}
-
-// TableDataRows is a collection of TableData
-type TableDataRows struct {
-	tableData []TableData
-}
-
-// PrintTable prints all TableDataRows
-func (t TableDataRows) PrintTable(cmdCtx core.CmdCtx) {
-	// Instantiate table writer
-	outputTable := table.NewWriter()
-	// Where will the table writer write to
-	outputTable.SetOutputMirror(cmdCtx.StdOut)
-	// Instantiate table headers
-	headers := make(table.Row, 0)
-	// Get all key values of the TableData struct for the header column labels
-	e := reflect.ValueOf(&t.tableData[0]).Elem()
-	for i := 0; i < e.NumField(); i++ {
-		headers = append(headers, e.Type().Field(i).Name)
-	}
-	// Instantiate table data
-	data := make([]table.Row, 0)
-	// Populate table data with data from t
-	for _, item := range t.tableData {
-		data = append(data, table.Row{item.Dataset, item.Epoch, item.Date, item.Size})
-	}
-	// Set headers, data, then render it
-	outputTable.AppendHeader(headers)
-	outputTable.AppendRows(data)
-	outputTable.SetStyle(table.StyleColoredBright)
-	outputTable.Style().Color.Header = text.Colors{text.BgBlue, text.FgBlack}
-	outputTable.Style().Options.DrawBorder = false
-	outputTable.Render()
 }
 
 // Run the "ifdestroy" command
@@ -57,29 +22,38 @@ func (cmd Cmd) Run(cmdCtx core.CmdCtx) {
 		fmt.Println("Error getting datasets", err)
 	}
 
-	selectedDataset := selectDataset(zfsDatasets)
+	selectedDataset := selectDataset("Select Dataset", zfsDatasets, cmdCtx)
 	snapshots, err := cmdCtx.ZfsService.GetSnapshots(selectedDataset)
 	if err != nil {
 		fmt.Println("Error getting snapshots ", err)
 	}
 
-	// * Make a parser to get the epochs
-	startPoint := cmdCtx.ZfsService.ParseEpoch(selectDataset(snapshots))
-	endPoint := cmdCtx.ZfsService.ParseEpoch(selectDataset(snapshots))
+	startPoint := cmdCtx.ZfsService.ParseEpoch(selectDataset("Select starting snapshot", snapshots, cmdCtx))
+	endPoint := cmdCtx.ZfsService.ParseEpoch(selectDataset("Select ending snapshot", snapshots, cmdCtx))
 	dryRunResult, err := cmdCtx.ZfsService.DryRunDestroy(selectedDataset.Name, startPoint, endPoint)
 	if err != nil {
 		fmt.Println("Error running dry run ", err)
+		start, _ := strconv.Atoi(startPoint)
+		end, _ := strconv.Atoi(endPoint)
+		if start > end {
+			fmt.Println("Start point must be before the endpoint. Try again.")
+		}
+
 	}
-	spew.Dump(dryRunResult)
+	fmt.Println(dryRunResult)
 
 }
 
-func selectDataset(datasets []*zfs.Dataset) *zfs.Dataset {
+func selectDataset(promptText string, datasets []*zfs.Dataset, cmdCtx core.CmdCtx) *zfs.Dataset {
+	var humanList []*system.HumanReadableDataset
+	for _, dataset := range datasets {
+		humanList = append(humanList, cmdCtx.ZfsService.ConvertToHumanReadableDataset(dataset))
+	}
 	templates := &promptui.SelectTemplates{
 		Label:    "{{ . }}?",
-		Active:   "-> {{ .Name | cyan }} ({{ .Used | red }})",
-		Inactive: "  {{ .Name | cyan }} ({{ .Used | red }})",
-		Selected: "-> {{ .Name | red | cyan }}",
+		Active:   "-> {{ .Name | blue }} ({{ .Used | red }}) {{ .Timestamp }} ",
+		Inactive: "  {{ .Name | blue }} ({{ .Used | red }}) {{ .Timestamp }} ",
+		Selected: "-> {{ .Name | red | blue }}",
 	}
 
 	searcher := func(input string, index int) bool {
@@ -91,8 +65,8 @@ func selectDataset(datasets []*zfs.Dataset) *zfs.Dataset {
 	}
 
 	prompt := promptui.Select{
-		Label:     "Select Dataset",
-		Items:     datasets,
+		Label:     promptText,
+		Items:     humanList,
 		Templates: templates,
 		Size:      10,
 		Searcher:  searcher,
