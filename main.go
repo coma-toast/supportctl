@@ -50,12 +50,14 @@ func main() {
 
 	// Add and Setup the IfDestroy Command
 	rootCmd.AddCommand(&cobra.Command{
-		Use:   "ifDestroy",
+		Use:   "ifDestroy dataset start end",
 		Short: "Free space estimate if snapshot(s) are destroyed",
-		Long:  "Calculate space freed by deleting a snapshot or a range of snapshots",
+		Long: `Calculate space freed by deleting a snapshot or a range of snapshots. 
+		Use no arguments for a menu driven interface`,
+		Example: "supportctl ifDestroy <dataset> <start epoch> <end epoch>",
 		Run: func(cmd *cobra.Command, args []string) {
 			ifDestroyCmd := ifdestroy.Cmd{}
-			ifDestroyCmd.Run(cmdCtx)
+			ifDestroyCmd.Run(cmdCtx, args)
 		},
 	})
 

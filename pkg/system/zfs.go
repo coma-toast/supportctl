@@ -21,6 +21,7 @@ import (
 type ZfsService interface {
 	GetZpool(string) (*zfs.Zpool, error)
 	GetFilesystems() ([]*zfs.Dataset, error)
+	GetDatasetByName(name string) (*zfs.Dataset, error)
 	GetZpoolErrors(disk string) []string
 	GetSnapshots(dataset *zfs.Dataset) ([]*zfs.Dataset, error)
 	DryRunDestroy(dataset string, start string, end string) (string, error)
@@ -75,6 +76,13 @@ func (z Zfs) ConvertToHumanReadableDataset(input *zfs.Dataset) *HumanReadableDat
 // GetZpool gets a ZPOOL
 func (z Zfs) GetZpool(name string) (*zfs.Zpool, error) {
 	return zfs.GetZpool(name)
+}
+
+// GetDatasetByName gets a specific dataset, by name
+func (z Zfs) GetDatasetByName(name string) (*zfs.Dataset, error) {
+	dataset, err := zfs.Datasets(name)
+
+	return dataset[0], err
 }
 
 // GetFilesystems gets the volumes of a ZPOOL
