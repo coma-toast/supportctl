@@ -80,7 +80,7 @@ func selectDataset(promptText string, datasets []*zfs.Dataset, cmdCtx core.CmdCt
 		Label:     promptText,
 		Items:     humanList,
 		Templates: templates,
-		Size:      10,
+		Size:      20,
 		Searcher:  searcher,
 	}
 
