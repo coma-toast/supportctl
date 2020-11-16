@@ -24,7 +24,7 @@ func main() {
 	// Setup the Root Command
 	rootCmd := &cobra.Command{
 		Use:   "supportctl",
-		Short: "Make Techctl Great Again",
+		Short: "\nMake Techctl Great Again!",
 	}
 
 	// Add and Setup the Hello Command
@@ -46,14 +46,16 @@ func main() {
 			driveFinderCmd := drivefinder.Cmd{}
 			driveFinderCmd.Run(cmdCtx)
 		},
+		DisableFlagParsing: true,
 	})
 
 	// Add and Setup the IfDestroy Command
 	rootCmd.AddCommand(&cobra.Command{
 		Use:   "ifDestroy dataset start end",
-		Short: "Free space estimate if snapshot(s) are destroyed",
-		Long: `Calculate space freed by deleting a snapshot or a range of snapshots. 
-		Use no arguments for a menu driven interface`,
+		Short: "Calculate how much space will be freed by deleting snapshots",
+		Long: `
+Calculate space freed by deleting a snapshot or a range of snapshots. 
+A menu driven interface will be used if no arguments are provided`,
 		Example: "supportctl ifDestroy <dataset> <start epoch> <end epoch>",
 		Run: func(cmd *cobra.Command, args []string) {
 			ifDestroyCmd := ifdestroy.Cmd{}

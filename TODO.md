@@ -16,7 +16,10 @@ root@JDALE-Home:/datto/tech# ls -lash
 * 4.0K -rw-r--r--  1 root root 2.1K May  2  2016 zfs-arc.php
 ```
 
-Add features:
-Port check - all DWA/SS ports; iscsi/mercury;
+Potential features:
+Port check - all DWA/SS ports; iscsi/mercury; Like the device network test, but for an agent.
 COW file resize
     * requires pulling agent config from the agent `snapctl agent:request <key> config`
+get logs and upload to tmp.datto 
+fixing the missing volume keys, if eng is not going to push out a fix soon
+
