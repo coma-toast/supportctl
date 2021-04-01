@@ -22,7 +22,7 @@ build: ## Build the project
 	@ln -sf $(CURDIR)/var/$(PROJECT_NAME) $(GO_PATH)/bin/$(PROJECT_NAME)
 
 devdeploy: ## deploy to dev environments
-	# rsync var/supportctl backup-admin@192.168.1.40:/tmp/
+	rsync var/supportctl backup-admin@192.168.1.40:/tmp/
 	rsync var/supportctl jjd:/home/jason/www-data/files
 
 lint: ## Lint the source code

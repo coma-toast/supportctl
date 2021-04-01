@@ -36,6 +36,7 @@ type Zfs struct {
 // HumanReadableDataset is a zfs dataset that is more human readable
 type HumanReadableDataset struct {
 	Name          string
+	AgentName     string
 	Timestamp     string
 	Origin        string
 	Used          string
