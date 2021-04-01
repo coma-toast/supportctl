@@ -8,10 +8,12 @@ require (
 	github.com/StackExchange/wmi v0.0.0-20190523213315-cbe66965904d // indirect
 	github.com/bicomsystems/go-libzfs v0.3.5
 	github.com/davecgh/go-spew v1.1.1
+	github.com/dustin/go-humanize v1.0.0
 	github.com/go-ole/go-ole v1.2.4 // indirect
 	github.com/go-openapi/strfmt v0.19.5 // indirect
 	github.com/jedib0t/go-pretty v4.3.0+incompatible
 	github.com/jedib0t/go-pretty/v6 v6.0.5
+	github.com/manifoldco/promptui v0.8.0
 	github.com/mattn/go-runewidth v0.0.9 // indirect
 	github.com/mistifyio/go-zfs v2.1.1+incompatible
 	github.com/shirou/gopsutil v2.20.6+incompatible

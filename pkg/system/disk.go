@@ -2,8 +2,10 @@ package system
 
 import (
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"log"
+	"os"
 	"os/exec"
 	"strings"
 
@@ -15,6 +17,7 @@ import (
 type DiskService interface {
 	GetPartitions() ([]disk.PartitionStat, error)
 	GetDiskSerialNumber(string) string
+	GetDiskWWN(string) string
 	GetDisks() []string
 	GetBlockDisks() map[string]*blkid.Blkiddata
 	GetSmartStatus(string) SmartData
@@ -38,6 +41,27 @@ func (d Disk) GetPartitions() ([]disk.PartitionStat, error) {
 // GetDiskSerialNumber for a given disk
 func (d Disk) GetDiskSerialNumber(diskname string) string {
 	return disk.GetDiskSerialNumber(diskname)
+}
+
+// GetDiskWWN gets the WWID of a disk
+func (d Disk) GetDiskWWN(disk string) string {
+	var wwn string
+	list, err := ioutil.ReadDir("/dev/disk/by-id")
+	if err != nil {
+		fmt.Println("Error reading /dev/disk/by-id folder", err)
+	}
+
+	for _, item := range list {
+		currentDisk, err := os.Readlink("/dev/disk/by-id/" + item.Name())
+		if err != nil {
+			fmt.Println("Error reading symlink", err)
+		}
+		if currentDisk == disk {
+			return item.Name()
+		}
+	}
+
+	return wwn
 }
 
 // GetDisks gets all disks on the device

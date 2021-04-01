@@ -37,7 +37,7 @@ func (t TableDataRows) PrintTable(cmdCtx core.CmdCtx) {
 	outputTable.SetOutputMirror(cmdCtx.StdOut)
 	// Instantiate table headers
 	headers := make(table.Row, 0)
-	// TODO: avoid reflect. make the headers manually. more code, but less "magic"
+	// TODO: avoid reflect? make the headers manually. more code, but less "magic"
 	// Get all key values of the TableData struct for the header column labels
 	e := reflect.ValueOf(&t.tableData[0]).Elem()
 	for i := 0; i < e.NumField(); i++ {
@@ -103,7 +103,11 @@ func (cmd Cmd) Run(cmdCtx core.CmdCtx) {
 		if smartData.RotationRate == 0 {
 			ssd = true
 		}
-		zpoolErrors := cmdCtx.ZfsService.GetZpoolErrors(serial)
+		zpoolErrors := strings.Join(cmdCtx.ZfsService.GetZpoolErrors(serial), ",")
+		if zpoolErrors == "" {
+			wwn := cmdCtx.DiskService.GetDiskWWN(disk)
+			zpoolErrors = strings.Join(cmdCtx.ZfsService.GetZpoolErrors(wwn), ",")
+		}
 
 		tableItem := TableData{
 			Drive:       disk,
